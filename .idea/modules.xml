@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/EDP Car Alarm/EDP Car Alarm.iml" filepath="$PROJECT_DIR$/EDP Car Alarm/EDP Car Alarm.iml" />
+      <module fileurl="file://$PROJECT_DIR$/EDPCarAlarm.iml" filepath="$PROJECT_DIR$/EDPCarAlarm.iml" />
+    </modules>
+  </component>
+</project>
+
