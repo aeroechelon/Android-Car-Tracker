@@ -4,5 +4,9 @@
     <string name="app_name">EDP Car Alarm</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="send_sms">Send Text Message</string>
+    <string name="find_my_location">Find My Location</string>
+    <string name="find_car_location">Find Car Location</string>
+    <string name="silence_alarm">Slience Alarm</string>
 
 </resources>

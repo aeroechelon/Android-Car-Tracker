@@ -18,37 +18,44 @@
         android:gravity="center"
         android:text="@string/dummy_content" />
 
-    <!-- This FrameLayout insets its children based on system windows using
-         android:fitsSystemWindows. -->
-    <FrameLayout
-        android:id="@+id/frame_layout"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:fitsSystemWindows="true">
+        android:orientation="vertical">
 
-        <!--<LinearLayout android:id="@+id/fullscreen_content_controls"-->
-            <!--style="?metaButtonBarStyle"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_gravity="bottom|center_horizontal"-->
-            <!--android:background="@color/black_overlay"-->
-            <!--android:orientation="horizontal"-->
-            <!--tools:ignore="UselessParent">-->
+    <!-- This FrameLayout insets its children based on system windows using
+         android:fitsSystemWindows. -->
+        <FrameLayout
+            android:id="@+id/frame_layout"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.9">
 
-            <fragment
-                android:id="@+id/activity_main_google_map"
-                class="com.google.android.gms.maps.MapFragment"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"/>
 
-            <Button android:id="@+id/dummy_button"
-                style="?metaButtonBarButtonStyle"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="@string/dummy_button" />
+                <fragment
+                    android:id="@+id/activity_main_google_map"
+                    class="com.google.android.gms.maps.MapFragment"
+                    android:layout_width="match_parent"
+                    android:layout_height="fill_parent"/>
 
-        <!--</LinearLayout>-->
-    </FrameLayout>
+        </FrameLayout>
+
+        <Button
+            style="?metaButtonBarButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.1"
+            android:text="@string/find_car_location"
+            android:background="@color/red_overlay"/>
+
+        <Button
+            style="?metaButtonBarButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="0.1"
+            android:text="@string/find_my_location"
+            android:background="@color/green_overlay"/>
+
+    </LinearLayout>
 
 </FrameLayout>
