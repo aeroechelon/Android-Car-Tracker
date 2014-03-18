@@ -1,12 +1,21 @@
 package com.ryersonedp.caralarm;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesClient;
+import com.google.android.gms.location.LocationClient;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.LatLng;
 import com.ryersonedp.caralarm.util.SystemUiHider;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
+import android.location.Location;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 
@@ -16,18 +25,26 @@ import android.view.View;
  *
  * @see SystemUiHider
  */
-public class MainActivity extends Activity {
+public class MainActivity extends Activity implements GooglePlayServicesClient.OnConnectionFailedListener, GooglePlayServicesClient.ConnectionCallbacks{
+
+
+    private static final String TAG = "MainActivity.java";
+
+    private static final float CITY_ZOOM = 10.0f;
+    private static final float REGION_ZOOM = 15.0f;
+    private static final float STREET_ZOOM = 18.0f;
+
     /**
      * Whether or not the system UI should be auto-hidden after
      * {@link #AUTO_HIDE_DELAY_MILLIS} milliseconds.
      */
-    private static final boolean AUTO_HIDE = true;
+    private static final boolean AUTO_HIDE = false;
 
     /**
      * If {@link #AUTO_HIDE} is set, the number of milliseconds to wait after
      * user interaction before hiding the system UI.
      */
-    private static final int AUTO_HIDE_DELAY_MILLIS = 3000;
+    private static final int AUTO_HIDE_DELAY_MILLIS = 10000;
 
     /**
      * If set, will toggle the system UI visibility upon interaction. Otherwise,
@@ -45,14 +62,48 @@ public class MainActivity extends Activity {
      */
     private SystemUiHider mSystemUiHider;
 
+    private GoogleMap map;
+    private Location location;
+    private LocationClient locationClient;
+
+    @Override
+    public void onConnected(Bundle bundle) {
+
+        Log.wtf(TAG, "GooglePlayServices onConnected invoked()");
+
+        // Get the last location from Google Play Services
+        location = locationClient.getLastLocation();
+
+        // Animate the camera to zoom at the indicated position by LatLng
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), STREET_ZOOM));
+
+    }
+
+    @Override
+    public void onDisconnected() {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
+    }
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_main);
 
-        final View controlsView = findViewById(R.id.fullscreen_content_controls);
         final View contentView = findViewById(R.id.fullscreen_content);
+
+        // Retrieving an instance of Google Map
+        map = ((MapFragment) getFragmentManager().findFragmentById(R.id.activity_main_google_map)).getMap();
+
+        // Initiating a locationClient reference using GooglePlayServicesClient
+        locationClient= new LocationClient(this, this, this);
+        locationClient.connect();
 
         // Set up an instance of SystemUiHider to control the system UI for
         // this activity.
@@ -73,20 +124,20 @@ public class MainActivity extends Activity {
                             // in-layout UI controls at the bottom of the
                             // screen.
                             if (mControlsHeight == 0) {
-                                mControlsHeight = controlsView.getHeight();
+//                                mControlsHeight = controlsView.getHeight();
                             }
                             if (mShortAnimTime == 0) {
                                 mShortAnimTime = getResources().getInteger(
                                         android.R.integer.config_shortAnimTime);
                             }
-                            controlsView.animate()
-                                    .translationY(visible ? 0 : mControlsHeight)
-                                    .setDuration(mShortAnimTime);
+//                            controlsView.animate()
+//                                    .translationY(visible ? 0 : mControlsHeight)
+//                                    .setDuration(mShortAnimTime);
                         } else {
                             // If the ViewPropertyAnimator APIs aren't
                             // available, simply show or hide the in-layout UI
                             // controls.
-                            controlsView.setVisibility(visible ? View.VISIBLE : View.GONE);
+//                            controlsView.setVisibility(visible ? View.VISIBLE : View.GONE);
                         }
 
                         if (visible && AUTO_HIDE) {
@@ -145,6 +196,7 @@ public class MainActivity extends Activity {
         @Override
         public void run() {
             mSystemUiHider.hide();
+
         }
     };
 
@@ -156,4 +208,6 @@ public class MainActivity extends Activity {
         mHideHandler.removeCallbacks(mHideRunnable);
         mHideHandler.postDelayed(mHideRunnable, delayMillis);
     }
+
+
 }
