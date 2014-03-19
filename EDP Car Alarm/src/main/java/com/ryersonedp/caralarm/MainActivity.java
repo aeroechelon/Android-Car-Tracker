@@ -6,6 +6,7 @@ import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.LatLng;
 import com.ryersonedp.caralarm.util.SystemUiHider;
 
@@ -29,10 +30,12 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
 
 
     private static final String TAG = "MainActivity.java";
-
     private static final float CITY_ZOOM = 10.0f;
     private static final float REGION_ZOOM = 15.0f;
     private static final float STREET_ZOOM = 18.0f;
+
+    private static final float RYERSON_LAT = 43.657689f;
+    private static final float RYERSON_LNG = -79.378233f;
 
     /**
      * Whether or not the system UI should be auto-hidden after
@@ -89,6 +92,19 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
 
     }
 
+    public void onClickFindMyLocationButton(View view){
+        // Animate the camera to zoom at the indicated position by LatLng
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), STREET_ZOOM));
+    }
+
+    public void onClickFindCarLocationButton(View view){
+
+        // Animate the camera to zoom at the indicated position by LatLng
+        map.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(RYERSON_LAT, RYERSON_LNG), STREET_ZOOM));
+
+
+    }
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -100,6 +116,7 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
 
         // Retrieving an instance of Google Map
         map = ((MapFragment) getFragmentManager().findFragmentById(R.id.activity_main_google_map)).getMap();
+        map.setTrafficEnabled(true);
 
         // Initiating a locationClient reference using GooglePlayServicesClient
         locationClient= new LocationClient(this, this, this);
