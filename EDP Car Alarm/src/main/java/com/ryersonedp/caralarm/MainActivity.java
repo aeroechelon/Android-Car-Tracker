@@ -102,6 +102,14 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
 
 
     @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Obtaining reference upon resume
+        Parse.initialize(this, getResources().getString(R.string.parse_applicationID), getResources().getString(R.string.parse_clientID));
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
