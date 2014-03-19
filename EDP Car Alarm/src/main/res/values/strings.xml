@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <string name="parse_applicationID">b5abt1q00EZyNK28JnqVWAcBHvtnFCQn9NwiVEiv</string>
+    <string name="parse_clientID">ls3pW4TC9JQJQIdOfGo29qdYmS6xxRplR0NRCGKF</string>
+
     <string name="app_name">EDP Car Alarm</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">DUMMY\nCONTENT</string>
@@ -8,5 +11,7 @@
     <string name="find_my_location">Find My Location</string>
     <string name="find_car_location">Find Car Location</string>
     <string name="silence_alarm">Slience Alarm</string>
+    <string name="your_location">You are here!</string>
+    <string name="car_location">Your car is here</string>
 
 </resources>
