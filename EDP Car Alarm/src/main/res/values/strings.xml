@@ -14,4 +14,17 @@
     <string name="your_location">You are here!</string>
     <string name="car_location">Your car is here</string>
 
+    <string name="error_no_internet_connection">Please check your internet connection.</string>
+
+    <string name="activity_main_about_title">About this application</string>
+    <string name="about">This application was built as a final year design project for a car alarm system.
+    \n
+    \nThe purpose of this application is to notify the user when a suspicious activity is happening inside your car. The car will trigger an alarm and notify the user of its location.
+    \n
+    \nThis application uses the following technologies:
+    \n
+    \n• Android SDK
+    \n• Google Maps API
+    \n• Parse SDK </string>
+
 </resources>
