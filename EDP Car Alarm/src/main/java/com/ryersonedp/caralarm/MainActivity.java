@@ -4,10 +4,14 @@ import android.app.Activity;
 import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
+import android.os.NetworkOnMainThreadException;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -30,13 +34,15 @@ import com.parse.Parse;
 
 import java.util.Date;
 
+import static com.ryersonedp.caralarm.R.string.parse_applicationID;
+
 /**
  * An example full-screen activity that shows and hides the system UI (i.e.
  * status bar and navigation/system bar) with user interaction.
  *
  * @see SystemUiHider
  */
-public class MainActivity extends Activity implements GooglePlayServicesClient.OnConnectionFailedListener, GooglePlayServicesClient.ConnectionCallbacks, GoogleMap.CancelableCallback{
+public class MainActivity extends Activity implements GooglePlayServicesClient.OnConnectionFailedListener, GooglePlayServicesClient.ConnectionCallbacks, GoogleMap.CancelableCallback, View.OnClickListener{
 
 
     private static final String TAG = "MainActivity.java";
@@ -56,6 +62,8 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
 
     private ParseObject mCarStatus;
 
+    private static final Animation feedBackAnimation = new AlphaAnimation(0.4f, 1.0f);
+
 
     @Override
     public void onConnected(Bundle bundle) {
@@ -67,7 +75,7 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
         currentLatitudeAndLongitude = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
 
         // Animate the camera to zoom at the indicated position by LatLng
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatitudeAndLongitude, STREET_ZOOM), CAMERA_ANIMATE_DURATION_SLOW, this);
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatitudeAndLongitude, REGION_ZOOM), CAMERA_ANIMATE_DURATION_SLOW, this);
         mMap.addMarker(new MarkerOptions()
                 .position(currentLatitudeAndLongitude)
                 .title(getResources().getString(R.string.your_location)));
@@ -120,14 +128,16 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
     }
 
     public void onClickFindMyLocationButton(View view){
+        this.onClick(view);
 
         mLocation = mLocationClient.getLastLocation();
 
         // Animate the camera to zoom at the indicated position by LatLng
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()), STREET_ZOOM), CAMERA_ANIMATE_DURATION_SLOW, this);
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()), REGION_ZOOM), CAMERA_ANIMATE_DURATION_SLOW, this);
     }
 
     public void onClickFindCarLocationButton(View view){
+        this.onClick(view);
 
         GetCallback<ParseObject> result;
 
@@ -152,7 +162,7 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
                     LatLng ryersonLatitudeAndLongitude = new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude));
 
                     // Animate the camera to zoom at the indicated position by LatLng
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ryersonLatitudeAndLongitude, STREET_ZOOM), CAMERA_ANIMATE_DURATION_SLOW, MainActivity.this);
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ryersonLatitudeAndLongitude, REGION_ZOOM), CAMERA_ANIMATE_DURATION_SLOW, MainActivity.this);
                     mMap.addMarker(new MarkerOptions()
                             .position(ryersonLatitudeAndLongitude)
                             .title(getResources().getString(R.string.car_location)));
@@ -170,8 +180,6 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
     protected void onResume() {
         super.onResume();
 
-        // Obtaining reference upon resume
-        Parse.initialize(this, getResources().getString(R.string.parse_applicationID), getResources().getString(R.string.parse_clientID));
     }
 
     @Override
@@ -193,13 +201,20 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
         mLocationClient.connect();
 
         // Initializing Parse
-        Parse.initialize(this, getResources().getString(R.string.parse_applicationID), getResources().getString(R.string.parse_clientID));
+        try{
+            Parse.initialize(this, getResources().getString(parse_applicationID), getResources().getString(R.string.parse_clientID));
+        }catch (NetworkOnMainThreadException e){
+            // upon resume or recent Parse.initialize exceptions this exception is thrown
+            // Temporarily supressing it right now
+            e.printStackTrace();
+
+        }
 
         // Obtaining Parse object reference
         mCarStatus = new ParseObject("Status");
 
         // Initializing Parse Push notifications
-        Parse.initialize(this, getResources().getString(R.string.parse_applicationID), getResources().getString(R.string.parse_clientID));
+        Parse.initialize(this, getResources().getString(parse_applicationID), getResources().getString(R.string.parse_clientID));
 
         // Setting default callback
         PushService.setDefaultPushCallback(this, MainActivity.class);
@@ -212,5 +227,14 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
     @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
+    }
+
+
+    @Override
+    public void onClick(View view) {
+        Log.wtf(TAG, "View was clicked!");
+        feedBackAnimation.setDuration(1100);
+        view.startAnimation(feedBackAnimation);
+
     }
 }
