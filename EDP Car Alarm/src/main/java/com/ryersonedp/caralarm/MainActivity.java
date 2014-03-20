@@ -18,9 +18,11 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.parse.GetCallback;
+import com.parse.ParseAnalytics;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
+import com.parse.PushService;
 import com.ryersonedp.caralarm.util.DialogManager;
 import com.ryersonedp.caralarm.util.QuickToast;
 import com.ryersonedp.caralarm.util.SystemUiHider;
@@ -196,6 +198,14 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
         // Obtaining Parse object reference
         mCarStatus = new ParseObject("Status");
 
+        // Initializing Parse Push notifications
+        Parse.initialize(this, getResources().getString(R.string.parse_applicationID), getResources().getString(R.string.parse_clientID));
+
+        // Setting default callback
+        PushService.setDefaultPushCallback(this, MainActivity.class);
+
+        // Setting up analytics
+        ParseAnalytics.trackAppOpened(getIntent());
 
     }
 
