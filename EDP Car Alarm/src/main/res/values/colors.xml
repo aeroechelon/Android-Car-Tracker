@@ -1,7 +1,7 @@
 <resources>
 
     <color name="black_overlay">#44000000</color>
-    <color name="red_overlay">#AAcc0000</color>
-    <color name="green_overlay">#AA006600</color>
+    <color name="red_overlay">#BBcc0000</color>
+    <color name="green_overlay">#BB006600</color>
 
 </resources>
