@@ -12,15 +12,16 @@ public class DialogManager {
      * @param context - application context
      * @param title - alert dialog title
      * @param message - alert message
+     * @param confirmation - confirmation message
      * @param status - success/failure (used to set icon)
      *               - pass null if you don't want icon
      * */
-    public void showAlertDialog(Context context, String title, String message, Boolean status) {
+    public void showAlertDialog(Context context, String title, String message, String confirmation, Boolean status) {
         AlertDialog alertDialog = new AlertDialog.Builder(context).create();
 
         alertDialog.setTitle(title); // Setting Dialog Title
         alertDialog.setMessage(message); // Setting Dialog Message
-        CharSequence buttonText = "Thanks for the info!";
+        CharSequence buttonText = confirmation;
 
         // Setting OK Button
         alertDialog.setButton(DialogInterface.BUTTON_POSITIVE, buttonText, new DialogInterface.OnClickListener() {

@@ -119,7 +119,7 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
 
                 DialogManager alert = new DialogManager();
                 // Internet Connection is not present
-                alert.showAlertDialog(this, getResources().getString(R.string.activity_main_about_title),
+                alert.showAlertDialog(this, getResources().getString(R.string.activity_main_about_title), getResources().getString(R.string.activity_main_about_confirmation),
                         getResources().getString(R.string.about), false);
                 break;
         }
