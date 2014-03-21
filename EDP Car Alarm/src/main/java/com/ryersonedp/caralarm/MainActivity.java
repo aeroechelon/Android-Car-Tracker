@@ -19,6 +19,7 @@ import com.google.android.gms.location.LocationClient;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.parse.GetCallback;
@@ -32,6 +33,7 @@ import com.ryersonedp.caralarm.util.QuickToast;
 import com.ryersonedp.caralarm.util.SystemUiHider;
 import com.parse.Parse;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import static com.ryersonedp.caralarm.R.string.parse_applicationID;
@@ -48,16 +50,21 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
     private static final String TAG = "MainActivity.java";
 
     private static final float CITY_ZOOM = 10.0f;
-    private static final float REGION_ZOOM = 15.0f;
+    private static final float REGION_ZOOM = 15.8f;
     private static final float STREET_ZOOM = 18.0f;
 
     private static final float RYERSON_LAT = 43.657689f;
     private static final float RYERSON_LNG = -79.378233f;
 
+    private static final LatLng ryersonLatitudeAndLongitude = new LatLng(RYERSON_LAT, RYERSON_LNG);
+
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd HH:mm:ss");
+
     private static final int CAMERA_ANIMATE_DURATION_SLOW = 2000;
 
     private GoogleMap mMap;
     private Location mLocation;
+    private LatLng mCurrentLatLng;
     private LocationClient mLocationClient;
 
     private ParseObject mCarStatus;
@@ -78,8 +85,10 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatitudeAndLongitude, REGION_ZOOM), CAMERA_ANIMATE_DURATION_SLOW, this);
         mMap.addMarker(new MarkerOptions()
                 .position(currentLatitudeAndLongitude)
-                .title(getResources().getString(R.string.your_location)));
-
+                .title(getResources().getString(R.string.your_location))
+                .snippet("Last update: " + dateFormat.format(new Date()))
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)))
+                .showInfoWindow();
     }
 
     @Override
@@ -119,8 +128,7 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
 
                 DialogManager alert = new DialogManager();
                 // Internet Connection is not present
-                alert.showAlertDialog(this, getResources().getString(R.string.activity_main_about_title), getResources().getString(R.string.activity_main_about_confirmation),
-                        getResources().getString(R.string.about), false);
+                alert.showAlertDialog(this, getResources().getString(R.string.activity_main_about_title),getResources().getString(R.string.about), getResources().getString(R.string.activity_main_about_confirmation), false);
                 break;
         }
 
@@ -131,9 +139,16 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
         this.onClick(view);
 
         mLocation = mLocationClient.getLastLocation();
+        mCurrentLatLng = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
 
         // Animate the camera to zoom at the indicated position by LatLng
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLocation.getLatitude(), mLocation.getLongitude()), REGION_ZOOM), CAMERA_ANIMATE_DURATION_SLOW, this);
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mCurrentLatLng, REGION_ZOOM), CAMERA_ANIMATE_DURATION_SLOW, this);
+        mMap.addMarker(new MarkerOptions()
+                .position(mCurrentLatLng)
+                .title(getResources().getString(R.string.your_location))
+                .snippet("Last updated " + dateFormat.format(new Date()))
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)))
+                .showInfoWindow();
     }
 
     public void onClickFindCarLocationButton(View view){
@@ -159,16 +174,34 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
                     String longitude = status.getString("Longitude");
                     Date date = status.getUpdatedAt();
 
-                    LatLng ryersonLatitudeAndLongitude = new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude));
+                    LatLng carLatitudeAndLongitude;
+
+                    try{
+                        carLatitudeAndLongitude = new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude));
+                    }catch (NullPointerException npe){
+                        npe.printStackTrace();
+
+                        carLatitudeAndLongitude = ryersonLatitudeAndLongitude;
+                    }
 
                     // Animate the camera to zoom at the indicated position by LatLng
                     mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ryersonLatitudeAndLongitude, REGION_ZOOM), CAMERA_ANIMATE_DURATION_SLOW, MainActivity.this);
-                    mMap.addMarker(new MarkerOptions()
-                            .position(ryersonLatitudeAndLongitude)
-                            .title(getResources().getString(R.string.car_location)));
 
+                    try {
 
-                    Log.wtf(TAG, "Latitude: " + latitude + " Longitude: " + longitude + " Date: " + date.toString());
+                        mMap.addMarker(new MarkerOptions()
+                                .position(carLatitudeAndLongitude)
+                                .title("Car's current location")
+                                .snippet("Last update " + dateFormat.format(new Date()))
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)))
+                                .showInfoWindow();
+                    }catch (NullPointerException dateThrownException){
+                        mMap.addMarker(new MarkerOptions()
+                                .position(carLatitudeAndLongitude)
+                                .title("Car last seen here")
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)))
+                                .showInfoWindow();
+                    }
                 }
             }
         });
@@ -213,11 +246,13 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
         // Obtaining Parse object reference
         mCarStatus = new ParseObject("Status");
 
-        // Initializing Parse Push notifications
-        Parse.initialize(this, getResources().getString(parse_applicationID), getResources().getString(R.string.parse_clientID));
-
         // Setting default callback
         PushService.setDefaultPushCallback(this, MainActivity.class);
+
+        // When users indicate they are Giants fans, we subscribe them to that channel.
+        PushService.subscribe(this, "Giants", MainActivity.class);
+
+
 
         // Setting up analytics
         ParseAnalytics.trackAppOpened(getIntent());
@@ -233,7 +268,7 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
     @Override
     public void onClick(View view) {
         Log.wtf(TAG, "View was clicked!");
-        feedBackAnimation.setDuration(1100);
+        feedBackAnimation.setDuration(200);
         view.startAnimation(feedBackAnimation);
 
     }
