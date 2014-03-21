@@ -11,8 +11,8 @@
     <string name="find_my_location">Find My Location</string>
     <string name="find_car_location">Find Car Location</string>
     <string name="silence_alarm">Slience Alarm</string>
-    <string name="your_location">You are here!</string>
-    <string name="car_location">Your car is here</string>
+    <string name="your_location">You are here</string>
+    <string name="car_location">Your car\'s location</string>
 
     <string name="error_no_internet_connection">Please check your internet connection.</string>
 
@@ -27,6 +27,7 @@
     \n
     \n• Android SDK
     \n• Google Maps API
-    \n• Parse SDK </string>
+    \n• Parse SDK
+    \n</string>
 
 </resources>
