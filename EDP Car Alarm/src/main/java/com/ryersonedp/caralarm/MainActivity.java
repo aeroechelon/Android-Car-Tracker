@@ -192,7 +192,7 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
                         mMap.addMarker(new MarkerOptions()
                                 .position(carLatitudeAndLongitude)
                                 .title("Car's current location")
-                                .snippet("Last update " + dateFormat.format(new Date()))
+                                .snippet("Last update " + dateFormat.format(date))
                                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)))
                                 .showInfoWindow();
                     }catch (NullPointerException dateThrownException){
