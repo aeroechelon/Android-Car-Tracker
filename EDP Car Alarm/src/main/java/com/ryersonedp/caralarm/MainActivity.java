@@ -143,8 +143,8 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
 
         ParseCloud.callFunctionInBackground("alarm", new HashMap<String, Object>(), new FunctionCallback<String>() {
             public void done(String result, ParseException e) {
-                if (e != null) {
-                    QuickToast.makeToast(MainActivity.this, "Sending silence alarm request ...");
+                if (e == null) {
+                    QuickToast.makeToast(MainActivity.this, "Request could not be made");
                 }
             }
         });
