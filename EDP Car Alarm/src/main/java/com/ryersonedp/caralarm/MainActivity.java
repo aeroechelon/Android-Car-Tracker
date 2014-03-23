@@ -22,8 +22,10 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.parse.FunctionCallback;
 import com.parse.GetCallback;
 import com.parse.ParseAnalytics;
+import com.parse.ParseCloud;
 import com.parse.ParseException;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
@@ -35,6 +37,7 @@ import com.parse.Parse;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
 
 import static com.ryersonedp.caralarm.R.string.parse_applicationID;
 
@@ -135,6 +138,18 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
         return true;
     }
 
+    public void onClickAlarmButton(View view){
+        this.onClick(view);
+
+        ParseCloud.callFunctionInBackground("alarm", new HashMap<String, Object>(), new FunctionCallback<String>() {
+            public void done(String result, ParseException e) {
+                if (e != null) {
+                    QuickToast.makeToast(MainActivity.this, "Sending silence alarm request ...");
+                }
+            }
+        });
+    }
+
     public void onClickFindMyLocationButton(View view){
         this.onClick(view);
 
@@ -157,7 +172,7 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
         GetCallback<ParseObject> result;
 
 
-        // Querying the Status class in the backround, sorting by ascending and retrieving the first result
+        // Querying the Status class in the background, sorting by ascending and retrieving the first result
         // This will essentially retrieve the most recent result from Parse
         ParseQuery<ParseObject> query = ParseQuery.getQuery("Status");
         query.orderByDescending("updatedAt");
@@ -212,6 +227,17 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
     @Override
     protected void onResume() {
         super.onResume();
+
+        // Initializing Parse
+        try{
+            Parse.initialize(this, getResources().getString(parse_applicationID), getResources().getString(R.string.parse_clientID));
+        }catch (NetworkOnMainThreadException e){
+            // upon resume or recent Parse.initialize exceptions this exception is thrown
+            // Temporarily supressing it right now
+            Log.e(TAG, "Parse initialize failed during onResume()");
+            e.printStackTrace();
+
+        }
 
     }
 
