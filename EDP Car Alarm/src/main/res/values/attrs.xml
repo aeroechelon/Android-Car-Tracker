@@ -9,4 +9,9 @@
         <attr name="metaButtonBarButtonStyle" format="reference" />
     </declare-styleable>
 
+    <!-- For custom fonts for views -->
+    <declare-styleable name="TypefacedTextView">
+        <attr name="typeface" format="string" />
+    </declare-styleable>
+
 </resources>
