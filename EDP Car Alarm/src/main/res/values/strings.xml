@@ -4,18 +4,21 @@
     <string name="parse_applicationID">b5abt1q00EZyNK28JnqVWAcBHvtnFCQn9NwiVEiv</string>
     <string name="parse_clientID">ls3pW4TC9JQJQIdOfGo29qdYmS6xxRplR0NRCGKF</string>
 
-    <string name="app_name">Car Watchdog</string>
+    <string name="app_name">Track Your Car</string>
     <string name="dummy_button">Dummy Button</string>
-    <string name="dummy_content">DUMMY\nCONTENT</string>
+    <string name="dummy_content">RYERSON CAR ALARM EDP</string>
     <string name="send_sms">Send Text Message</string>
-    <string name="find_my_location">Find My Location</string>
-    <string name="find_car_location">Find Car Location</string>
-    <string name="silence_alarm">Slience Alarm</string>
+
+    <!-- Buttons -->
+    <string name="find_my_location">Me</string>
+    <string name="find_car_location">Car</string>
+    <string name="alarm">Alarm</string>
+
+    <!-- Marker labels -->
     <string name="your_location">You are here</string>
     <string name="car_location">Your car\'s location</string>
 
     <string name="error_no_internet_connection">Please check your internet connection.</string>
-
     <string name="activity_main_about_title">About This Application</string>
 
     <string name="activity_main_about_confirmation">Thanks for the information!</string>

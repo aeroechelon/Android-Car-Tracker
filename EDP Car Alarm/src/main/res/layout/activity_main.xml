@@ -3,7 +3,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#0099cc"
-    tools:context="com.ryersonedp.caralarm.MainActivity">
+    tools:context="com.ryersonedp.caralarm.MainActivity"
+    xmlns:your_namespace="http://schemas.android.com/apk/res-auto">
 
     <!-- The primary full-screen view. This can be replaced with whatever view
          is needed to present your content, e.g. VideoView, SurfaceView,
@@ -24,31 +25,60 @@
         android:layout_width="match_parent"
         android:layout_height="fill_parent"/>
 
-    <Button
+    <com.ryersonedp.caralarm.util.TypefacedButton
         style="?metaButtonBarButtonStyle"
+        android:textSize="35dp"
         android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:text="@string/find_car_location"
+        android:layout_height="60dp"
+        android:text="@string/alarm"
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginTop="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
-        android:layout_marginBottom="70dp"
-        android:padding="10dp"
-        android:background="@color/red_overlay"
-        android:onClick="onClickFindCarLocationButton"
-        android:clickable="true"/>
-
-    <Button
-        style="?metaButtonBarButtonStyle"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:layout_margin="10dp"
-        android:layout_gravity="bottom|center_horizontal"
-        android:text="@string/find_my_location"
-        android:background="@color/green_overlay"
+        android:layout_marginBottom="75dp"
+        android:background="@color/black_overlay"
+        android:onClick="onClickAlarmButton"
         android:clickable="true"
-        android:onClick="onClickFindMyLocationButton"/>
+        your_namespace:typeface="Roboto-Light.ttf"/>
+    
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:layout_gravity="bottom|center_horizontal">
+
+        <com.ryersonedp.caralarm.util.TypefacedButton
+            style="?metaButtonBarButtonStyle"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_marginLeft="10dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="5dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:textSize="35dp"
+            android:text="@string/find_my_location"
+            android:background="@color/green_overlay"
+            android:clickable="true"
+            android:onClick="onClickFindMyLocationButton"
+            your_namespace:typeface="Roboto-Light.ttf"/>
+
+        <com.ryersonedp.caralarm.util.TypefacedButton
+            style="?metaButtonBarButtonStyle"
+            android:textSize="35dp"
+            android:layout_width="match_parent"
+            android:layout_weight="1"
+            android:layout_height="match_parent"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginBottom="10dp"
+            android:text="@string/find_car_location"
+            android:background="@color/red_overlay"
+            android:clickable="true"
+            android:onClick="onClickFindCarLocationButton"
+            your_namespace:typeface="Roboto-Light.ttf"/>
+
+    </LinearLayout>
 
 
 </FrameLayout>
