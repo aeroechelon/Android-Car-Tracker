@@ -1,7 +1,6 @@
 package com.ryersonedp.caralarm;
 
 import android.app.Activity;
-import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.NetworkOnMainThreadException;
@@ -11,7 +10,6 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
-import android.view.animation.ScaleAnimation;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -21,6 +19,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.parse.FunctionCallback;
 import com.parse.GetCallback;
@@ -69,6 +68,8 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
     private Location mLocation;
     private LatLng mCurrentLatLng;
     private LocationClient mLocationClient;
+    private Marker mCarLocationMarker;
+    private Marker mMyLocationMarker;
 
     private ParseObject mCarStatus;
 
@@ -158,12 +159,16 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
 
         // Animate the camera to zoom at the indicated position by LatLng
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mCurrentLatLng, REGION_ZOOM), CAMERA_ANIMATE_DURATION_SLOW, this);
-        mMap.addMarker(new MarkerOptions()
+
+        if(mMyLocationMarker != null)
+            mMyLocationMarker.remove();
+        mMyLocationMarker = mMap.addMarker(new MarkerOptions()
                 .position(mCurrentLatLng)
                 .title(getResources().getString(R.string.your_location))
                 .snippet("Last updated " + dateFormat.format(new Date()))
-                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)))
-                .showInfoWindow();
+                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
+
+        mMyLocationMarker.showInfoWindow();
     }
 
     public void onClickFindCarLocationButton(View view){
@@ -185,6 +190,7 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
 
                 } else {
                     Log.wtf(TAG, "Retrieved the object.");
+
                     String latitude = status.getString("Latitude");
                     String longitude = status.getString("Longitude");
                     Date date = status.getUpdatedAt();
@@ -193,6 +199,7 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
 
                     try{
                         carLatitudeAndLongitude = new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude));
+                        Log.wtf(TAG, "The coordinates are: " + latitude + " " + longitude);
                     }catch (NullPointerException npe){
                         npe.printStackTrace();
 
@@ -200,16 +207,18 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
                     }
 
                     // Animate the camera to zoom at the indicated position by LatLng
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(ryersonLatitudeAndLongitude, REGION_ZOOM), CAMERA_ANIMATE_DURATION_SLOW, MainActivity.this);
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(carLatitudeAndLongitude, REGION_ZOOM), CAMERA_ANIMATE_DURATION_SLOW, MainActivity.this);
 
                     try {
 
-                        mMap.addMarker(new MarkerOptions()
+                        if(mCarLocationMarker != null)
+                            mCarLocationMarker.remove();
+                        mCarLocationMarker = mMap.addMarker(new MarkerOptions()
                                 .position(carLatitudeAndLongitude)
                                 .title("Car's current location")
                                 .snippet("Last update " + dateFormat.format(date))
-                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)))
-                                .showInfoWindow();
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED)));
+                        mCarLocationMarker.showInfoWindow();
                     }catch (NullPointerException dateThrownException){
                         mMap.addMarker(new MarkerOptions()
                                 .position(carLatitudeAndLongitude)
