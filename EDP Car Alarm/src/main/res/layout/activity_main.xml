@@ -27,16 +27,17 @@
 
     <com.ryersonedp.caralarm.util.TypefacedButton
         style="?metaButtonBarButtonStyle"
+        android:id="@+id/activity_main_alarm_button"
         android:textSize="35dp"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:text="@string/alarm"
+        android:text="@string/sound_alarm"
         android:layout_gravity="bottom|center_horizontal"
         android:layout_marginTop="10dp"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:layout_marginBottom="75dp"
-        android:background="@color/black_overlay"
+        android:background="@color/red_overlay"
         android:onClick="onClickAlarmButton"
         android:clickable="true"
         your_namespace:typeface="Roboto-Light.ttf"/>
@@ -48,6 +49,7 @@
 
         <com.ryersonedp.caralarm.util.TypefacedButton
             style="?metaButtonBarButtonStyle"
+            android:id="@+id/activity_main_my_location_button"
             android:layout_width="match_parent"
             android:layout_weight="1"
             android:layout_marginLeft="10dp"
@@ -57,13 +59,14 @@
             android:layout_marginBottom="10dp"
             android:textSize="35dp"
             android:text="@string/find_my_location"
-            android:background="@color/green_overlay"
+            android:background="@color/grey_overlay"
             android:clickable="true"
             android:onClick="onClickFindMyLocationButton"
             your_namespace:typeface="Roboto-Light.ttf"/>
 
         <com.ryersonedp.caralarm.util.TypefacedButton
             style="?metaButtonBarButtonStyle"
+            android:id="@+id/activity_main_car_location_button"
             android:textSize="35dp"
             android:layout_width="match_parent"
             android:layout_weight="1"
@@ -73,7 +76,7 @@
             android:layout_marginTop="10dp"
             android:layout_marginBottom="10dp"
             android:text="@string/find_car_location"
-            android:background="@color/red_overlay"
+            android:background="@color/black_overlay"
             android:clickable="true"
             android:onClick="onClickFindCarLocationButton"
             your_namespace:typeface="Roboto-Light.ttf"/>

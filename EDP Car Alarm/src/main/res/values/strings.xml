@@ -12,7 +12,8 @@
     <!-- Buttons -->
     <string name="find_my_location">Me</string>
     <string name="find_car_location">Car</string>
-    <string name="alarm">Alarm</string>
+    <string name="silence_alarm">Silence Alarm</string>
+    <string name="sound_alarm">Sound Alarm</string>
 
     <!-- Marker labels -->
     <string name="your_location">You are here</string>
