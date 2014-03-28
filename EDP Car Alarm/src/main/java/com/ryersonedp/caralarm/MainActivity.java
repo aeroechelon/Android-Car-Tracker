@@ -51,6 +51,8 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
 
     private static final String TAG = "MainActivity.java";
 
+    private static final String GENERIC_EXCEPTION_TOAST = "Uh oh. An unexpected issue occurred!";
+
     private static final float CITY_ZOOM = 10.0f;
     private static final float REGION_ZOOM = 15.8f;
     private static final float STREET_ZOOM = 18.0f;
@@ -142,10 +144,11 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
     public void onClickAlarmButton(View view){
         this.onClick(view);
 
-        ParseCloud.callFunctionInBackground("alarm", new HashMap<String, Object>(), new FunctionCallback<String>() {
+        ParseCloud.callFunctionInBackground("toggleAlarm", new HashMap<String, Object>(), new FunctionCallback<String>() {
             public void done(String result, ParseException e) {
-                if (e == null) {
-                    QuickToast.makeToast(MainActivity.this, "Request could not be made");
+                if (result == null) {
+                    QuickToast.makeToast(MainActivity.this, GENERIC_EXCEPTION_TOAST);
+                    e.printStackTrace();
                 }
             }
         });
@@ -174,19 +177,16 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
     public void onClickFindCarLocationButton(View view){
         this.onClick(view);
 
-        GetCallback<ParseObject> result;
-
-
         // Querying the Status class in the background, sorting by ascending and retrieving the first result
         // This will essentially retrieve the most recent result from Parse
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("Status");
+        ParseQuery<ParseObject> query = ParseQuery.getQuery("CarStatus");
         query.orderByDescending("updatedAt");
-        query.getFirstInBackground(result = new GetCallback<ParseObject>() {
+        query.getFirstInBackground(new GetCallback<ParseObject>() {
 
             public void done(ParseObject status, ParseException e) {
                 if (status == null) {
                     Log.wtf(TAG, "Parse object is null");
-                    QuickToast.makeToast(MainActivity.this, getResources().getString(R.string.error_no_internet_connection));
+                    QuickToast.makeToast(MainActivity.this, GENERIC_EXCEPTION_TOAST);
 
                 } else {
                     Log.wtf(TAG, "Retrieved the object.");
@@ -245,9 +245,7 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
             // Temporarily supressing it right now
             Log.e(TAG, "Parse initialize failed during onResume()");
             e.printStackTrace();
-
         }
-
     }
 
     @Override
@@ -274,6 +272,7 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
         }catch (NetworkOnMainThreadException e){
             // upon resume or recent Parse.initialize exceptions this exception is thrown
             // Temporarily supressing it right now
+            QuickToast.makeToast(this, GENERIC_EXCEPTION_TOAST);
             e.printStackTrace();
 
         }
@@ -287,8 +286,6 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
         // When users indicate they are Giants fans, we subscribe them to that channel.
         PushService.subscribe(this, "Giants", MainActivity.class);
 
-
-
         // Setting up analytics
         ParseAnalytics.trackAppOpened(getIntent());
 
@@ -298,7 +295,6 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
     }
-
 
     @Override
     public void onClick(View view) {
