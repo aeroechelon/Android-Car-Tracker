@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.AlphaAnimation;
 import android.view.animation.Animation;
+import android.widget.Button;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
@@ -72,6 +73,9 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
     private LocationClient mLocationClient;
     private Marker mCarLocationMarker;
     private Marker mMyLocationMarker;
+    private Button mMyLocationButton;
+    private Button mCarLocationButton;
+    private Button mToggleAlarmButton;
 
     private ParseObject mCarStatus;
 
@@ -150,10 +154,37 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
                     QuickToast.makeToast(MainActivity.this, GENERIC_EXCEPTION_TOAST);
                     e.printStackTrace();
                 }
+
+                ParseCloud.callFunctionInBackground("getLastKnownCarStatus", new HashMap<String, Object>(), new FunctionCallback<ParseObject>() {
+                    public void done(ParseObject status, ParseException e) {
+
+                        if ((Boolean) status.get("isAlarming") == false) {
+                            mToggleAlarmButton.setText(getResources().getString(R.string.sound_alarm));
+                            mToggleAlarmButton.setBackgroundColor(getResources().getColor(R.color.red_overlay));
+                        } else {
+                            mToggleAlarmButton.setText(getResources().getString(R.string.silence_alarm));
+                            mToggleAlarmButton.setBackgroundColor(getResources().getColor(R.color.green_overlay));
+                        }
+
+                        mCarLocationButton.setBackgroundColor(getResources().getColor(R.color.black_overlay));
+                        mMyLocationButton.setBackgroundColor(getResources().getColor(R.color.grey_overlay));
+                    }
+
+                });
+
             }
         });
+
+        onClickFindCarLocationButton(view);
     }
 
+    /**
+     * Callback method when Find My Location Button is clicked.
+     *
+     * Also updates database with latest car status.
+     *
+     * @param view
+     */
     public void onClickFindMyLocationButton(View view){
         this.onClick(view);
 
@@ -172,18 +203,27 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
                 .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN)));
 
         mMyLocationMarker.showInfoWindow();
+
+        mCarLocationButton.setBackgroundColor(getResources().getColor(R.color.grey_overlay));
+        mMyLocationButton.setBackgroundColor(getResources().getColor(R.color.black_overlay));
+
+
+        Log.wtf(TAG, "Updating server with phone status.");
+        Log.wtf(TAG, "Your current location is at " + mLocation.getLatitude() + ", " + mLocation.getLongitude());
+
+        ParseObject updatedPhoneStatus = new ParseObject("PhoneStatus");
+        updatedPhoneStatus.put("Latitude", mLocation.getLatitude() + "");
+        updatedPhoneStatus.put("Longitude", mLocation.getLongitude() + "");
+        updatedPhoneStatus.saveEventually();
+
     }
 
     public void onClickFindCarLocationButton(View view){
         this.onClick(view);
 
-        // Querying the Status class in the background, sorting by ascending and retrieving the first result
-        // This will essentially retrieve the most recent result from Parse
-        ParseQuery<ParseObject> query = ParseQuery.getQuery("CarStatus");
-        query.orderByDescending("updatedAt");
-        query.getFirstInBackground(new GetCallback<ParseObject>() {
-
+        ParseCloud.callFunctionInBackground("getLastKnownCarStatus", new HashMap<String, Object>(), new FunctionCallback<ParseObject>() {
             public void done(ParseObject status, ParseException e) {
+
                 if (status == null) {
                     Log.wtf(TAG, "Parse object is null");
                     QuickToast.makeToast(MainActivity.this, GENERIC_EXCEPTION_TOAST);
@@ -229,7 +269,8 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
                 }
             }
         });
-
+        mCarLocationButton.setBackgroundColor(getResources().getColor(R.color.black_overlay));
+        mMyLocationButton.setBackgroundColor(getResources().getColor(R.color.grey_overlay));
     }
 
 
@@ -289,6 +330,26 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
         // Setting up analytics
         ParseAnalytics.trackAppOpened(getIntent());
 
+        mToggleAlarmButton = (Button) findViewById(R.id.activity_main_alarm_button);
+        mCarLocationButton = (Button) findViewById(R.id.activity_main_car_location_button);
+        mMyLocationButton = (Button) findViewById(R.id.activity_main_my_location_button);
+
+        ParseCloud.callFunctionInBackground("getLastKnownCarStatus", new HashMap<String, Object>(), new FunctionCallback<ParseObject>() {
+            public void done(ParseObject result, ParseException e) {
+                if (result == null) {
+                    QuickToast.makeToast(MainActivity.this, GENERIC_EXCEPTION_TOAST);
+                    e.printStackTrace();
+                }else{
+                    if((Boolean) result.get("isAlarming") == true){
+                        mToggleAlarmButton.setText(getResources().getString(R.string.silence_alarm));
+                        mToggleAlarmButton.setBackgroundColor(getResources().getColor(R.color.green_overlay));
+                    }else{
+                        mToggleAlarmButton.setText(getResources().getString(R.string.sound_alarm));
+                        mToggleAlarmButton.setBackgroundColor(getResources().getColor(R.color.red_overlay));
+                    }
+                }
+            }
+        });
     }
 
     @Override
@@ -301,6 +362,5 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
         Log.wtf(TAG, "View was clicked!");
         feedBackAnimation.setDuration(200);
         view.startAnimation(feedBackAnimation);
-
     }
 }
