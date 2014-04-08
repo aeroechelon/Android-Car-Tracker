@@ -1,9 +1,16 @@
 package com.ryersonedp.caralarm;
 
 import android.app.Activity;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
+import android.content.Intent;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.NetworkOnMainThreadException;
+import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -58,6 +65,8 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
     private static final float REGION_ZOOM = 15.8f;
     private static final float STREET_ZOOM = 18.0f;
 
+    private static float       DEFAULT_ZOOM = STREET_ZOOM;
+
     private static final float RYERSON_LAT = 43.657689f;
     private static final float RYERSON_LNG = -79.378233f;
 
@@ -92,7 +101,7 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
         currentLatitudeAndLongitude = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
 
         // Animate the camera to zoom at the indicated position by LatLng
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatitudeAndLongitude, REGION_ZOOM), CAMERA_ANIMATE_DURATION_SLOW, this);
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(currentLatitudeAndLongitude, DEFAULT_ZOOM), CAMERA_ANIMATE_DURATION_SLOW, this);
         mMyLocationMarker = mMap.addMarker(new MarkerOptions()
                 .position(currentLatitudeAndLongitude)
                 .title(getResources().getString(R.string.your_location))
@@ -175,6 +184,14 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
             }
         });
 
+        if (mToggleAlarmButton.getText() == getResources().getString(R.string.silence_alarm)) {
+            mToggleAlarmButton.setText(getResources().getString(R.string.sound_alarm));
+            mToggleAlarmButton.setBackgroundColor(getResources().getColor(R.color.red_overlay));
+        } else {
+            mToggleAlarmButton.setText(getResources().getString(R.string.silence_alarm));
+            mToggleAlarmButton.setBackgroundColor(getResources().getColor(R.color.green_overlay));
+        }
+
         onClickFindCarLocationButton(view);
     }
 
@@ -192,7 +209,7 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
         mCurrentLatLng = new LatLng(mLocation.getLatitude(), mLocation.getLongitude());
 
         // Animate the camera to zoom at the indicated position by LatLng
-        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mCurrentLatLng, REGION_ZOOM), CAMERA_ANIMATE_DURATION_SLOW, this);
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(mCurrentLatLng, DEFAULT_ZOOM), CAMERA_ANIMATE_DURATION_SLOW, this);
 
         if(mMyLocationMarker != null)
             mMyLocationMarker.remove();
@@ -207,14 +224,13 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
         mCarLocationButton.setBackgroundColor(getResources().getColor(R.color.grey_overlay));
         mMyLocationButton.setBackgroundColor(getResources().getColor(R.color.black_overlay));
 
-
         Log.wtf(TAG, "Updating server with phone status.");
         Log.wtf(TAG, "Your current location is at " + mLocation.getLatitude() + ", " + mLocation.getLongitude());
 
         ParseObject updatedPhoneStatus = new ParseObject("PhoneStatus");
         updatedPhoneStatus.put("Latitude", mLocation.getLatitude() + "");
         updatedPhoneStatus.put("Longitude", mLocation.getLongitude() + "");
-        updatedPhoneStatus.saveEventually();
+        updatedPhoneStatus.saveInBackground();
 
     }
 
@@ -247,7 +263,7 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
                     }
 
                     // Animate the camera to zoom at the indicated position by LatLng
-                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(carLatitudeAndLongitude, REGION_ZOOM), CAMERA_ANIMATE_DURATION_SLOW, MainActivity.this);
+                    mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(carLatitudeAndLongitude, DEFAULT_ZOOM), CAMERA_ANIMATE_DURATION_SLOW, MainActivity.this);
 
                     try {
 
@@ -350,6 +366,7 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
                 }
             }
         });
+
     }
 
     @Override
@@ -362,5 +379,37 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
         Log.wtf(TAG, "View was clicked!");
         feedBackAnimation.setDuration(200);
         view.startAnimation(feedBackAnimation);
+
+        createNotification();
+    }
+
+    private void createNotification(){
+        Log.wtf(TAG, "Create Notification was invoked.");
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(this)
+                        .setContentTitle("My notification")
+                        .setContentText("Hello World!");
+        // Creates an explicit intent for an Activity in your app
+        Intent resultIntent = new Intent(this, MainActivity.class);
+
+        // The stack builder object will contain an artificial back stack for the
+        // started Activity.
+        // This ensures that navigating backward from the Activity leads out of
+        // your application to the Home screen.
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        // Adds the back stack for the Intent (but not the Intent itself)
+        stackBuilder.addParentStack(MainActivity.class);
+        // Adds the Intent that starts the Activity to the top of the stack
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent =
+                stackBuilder.getPendingIntent(
+                        0,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+        mBuilder.setContentIntent(resultPendingIntent);
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        // mId allows you to update the notification later on.
+        mNotificationManager.notify(1, mBuilder.build());
     }
 }
