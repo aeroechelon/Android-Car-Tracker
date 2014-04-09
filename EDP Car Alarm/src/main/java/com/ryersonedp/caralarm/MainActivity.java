@@ -7,6 +7,7 @@ import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.location.Location;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.NetworkOnMainThreadException;
 import android.support.v4.app.NotificationCompat;
@@ -34,6 +35,7 @@ import com.parse.GetCallback;
 import com.parse.ParseAnalytics;
 import com.parse.ParseCloud;
 import com.parse.ParseException;
+import com.parse.ParseInstallation;
 import com.parse.ParseObject;
 import com.parse.ParseQuery;
 import com.parse.PushService;
@@ -230,7 +232,7 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
         ParseObject updatedPhoneStatus = new ParseObject("PhoneStatus");
         updatedPhoneStatus.put("Latitude", mLocation.getLatitude() + "");
         updatedPhoneStatus.put("Longitude", mLocation.getLongitude() + "");
-        updatedPhoneStatus.saveInBackground();
+        updatedPhoneStatus.saveEventually();
 
     }
 
@@ -245,7 +247,6 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
                     QuickToast.makeToast(MainActivity.this, GENERIC_EXCEPTION_TOAST);
 
                 } else {
-                    Log.wtf(TAG, "Retrieved the object.");
 
                     String latitude = status.getString("Latitude");
                     String longitude = status.getString("Longitude");
@@ -255,10 +256,8 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
 
                     try{
                         carLatitudeAndLongitude = new LatLng(Double.parseDouble(latitude), Double.parseDouble(longitude));
-                        Log.wtf(TAG, "The coordinates are: " + latitude + " " + longitude);
-                    }catch (NullPointerException npe){
-                        npe.printStackTrace();
-
+                    }catch (NullPointerException nullPointerException){
+                        nullPointerException.printStackTrace();
                         carLatitudeAndLongitude = ryersonLatitudeAndLongitude;
                     }
 
@@ -295,14 +294,14 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
         super.onResume();
 
         // Initializing Parse
-        try{
-            Parse.initialize(this, getResources().getString(parse_applicationID), getResources().getString(R.string.parse_clientID));
-        }catch (NetworkOnMainThreadException e){
-            // upon resume or recent Parse.initialize exceptions this exception is thrown
-            // Temporarily supressing it right now
-            Log.e(TAG, "Parse initialize failed during onResume()");
-            e.printStackTrace();
-        }
+//        try{
+//            Parse.initialize(this, getResources().getString(parse_applicationID), getResources().getString(R.string.parse_clientID));
+//        }catch (NetworkOnMainThreadException e){
+//            // upon resume or recent Parse.initialize exceptions this exception is thrown
+//            // Temporarily supressing it right now
+//            Log.e(TAG, "Parse initialize failed during onResume()");
+//            e.printStackTrace();
+//        }
     }
 
     @Override
@@ -328,11 +327,12 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
             Parse.initialize(this, getResources().getString(parse_applicationID), getResources().getString(R.string.parse_clientID));
         }catch (NetworkOnMainThreadException e){
             // upon resume or recent Parse.initialize exceptions this exception is thrown
-            // Temporarily supressing it right now
-            QuickToast.makeToast(this, GENERIC_EXCEPTION_TOAST);
+            // Temporarily suppressing it right now
+            Log.e(TAG, "Parse Exception thrown during onCreate()");
             e.printStackTrace();
-
         }
+
+        ParseInstallation.getCurrentInstallation().saveInBackground();
 
         // Obtaining Parse object reference
         mCarStatus = new ParseObject("Status");
@@ -346,9 +346,9 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
         // Setting up analytics
         ParseAnalytics.trackAppOpened(getIntent());
 
-        mToggleAlarmButton = (Button) findViewById(R.id.activity_main_alarm_button);
-        mCarLocationButton = (Button) findViewById(R.id.activity_main_car_location_button);
-        mMyLocationButton = (Button) findViewById(R.id.activity_main_my_location_button);
+        mToggleAlarmButton  = (Button) findViewById(R.id.activity_main_alarm_button);
+        mCarLocationButton  = (Button) findViewById(R.id.activity_main_car_location_button);
+        mMyLocationButton   = (Button) findViewById(R.id.activity_main_my_location_button);
 
         ParseCloud.callFunctionInBackground("getLastKnownCarStatus", new HashMap<String, Object>(), new FunctionCallback<ParseObject>() {
             public void done(ParseObject result, ParseException e) {
@@ -370,46 +370,10 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
     }
 
     @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-    }
-
-    @Override
     public void onClick(View view) {
-        Log.wtf(TAG, "View was clicked!");
+
         feedBackAnimation.setDuration(200);
         view.startAnimation(feedBackAnimation);
 
-        createNotification();
-    }
-
-    private void createNotification(){
-        Log.wtf(TAG, "Create Notification was invoked.");
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(this)
-                        .setContentTitle("My notification")
-                        .setContentText("Hello World!");
-        // Creates an explicit intent for an Activity in your app
-        Intent resultIntent = new Intent(this, MainActivity.class);
-
-        // The stack builder object will contain an artificial back stack for the
-        // started Activity.
-        // This ensures that navigating backward from the Activity leads out of
-        // your application to the Home screen.
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-        // Adds the back stack for the Intent (but not the Intent itself)
-        stackBuilder.addParentStack(MainActivity.class);
-        // Adds the Intent that starts the Activity to the top of the stack
-        stackBuilder.addNextIntent(resultIntent);
-        PendingIntent resultPendingIntent =
-                stackBuilder.getPendingIntent(
-                        0,
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                );
-        mBuilder.setContentIntent(resultPendingIntent);
-        NotificationManager mNotificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        // mId allows you to update the notification later on.
-        mNotificationManager.notify(1, mBuilder.build());
     }
 }

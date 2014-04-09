@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
+    <!-- Parse Keys-->
     <string name="parse_applicationID">b5abt1q00EZyNK28JnqVWAcBHvtnFCQn9NwiVEiv</string>
     <string name="parse_clientID">ls3pW4TC9JQJQIdOfGo29qdYmS6xxRplR0NRCGKF</string>
 
+    <!-- Application Attributes-->
     <string name="app_name">Track Your Car</string>
     <string name="dummy_button">Dummy Button</string>
     <string name="dummy_content">RYERSON CAR ALARM EDP</string>
@@ -19,7 +21,20 @@
     <string name="your_location">You are here</string>
     <string name="car_location">Your car\'s location</string>
 
+    <!-- Toast Notifications -->
     <string name="error_no_internet_connection">Please check your internet connection.</string>
+
+    <!-- Notifications -->
+
+    <string name="notification_title_GENERIC">Car Alarm Status</string>
+    <string name="notification_content_GENERIC">Touch to check your car status</string>
+
+    <string name="notification_content_STATUS_ALARM_ON">Your car alarm is sounding</string>
+    <string name="notification_content_STATUS_ALARM_OFF">Your car is now safe</string>
+    <string name="notification_content_STATUS_ALARM_MANUAL_ON">Your car alarm has been manually turned on</string>
+    <string name="notification_content_STATUS_ALARM_MANUAL_OFF">Your car alarm has been manually turned off</string>
+
+    <!-- Credits-->
     <string name="activity_main_about_title">About This Application</string>
 
     <string name="activity_main_about_confirmation">Thanks for the information!</string>
@@ -32,5 +47,13 @@
     \n• Android SDK
     \n• Google Maps API
     \n• Parse SDK</string>
+
+    <!-- Push Notifications-->
+    <string name="custom_notification_receiver">com.ryersonedp.caralarm.NEW_NOTIF</string>
+    <string name="broadcast_receiver_action_STATUS_ALARM_ON">com.ryersonedp.caralarm.STATUS_ALARM_ON</string>
+    <string name="broadcast_receiver_action_STATUS_ALARM_OFF">com.ryersonedp.caralarm.STATUS_ALARM_OFF</string>
+    <string name="broadcast_receiver_action_STATUS_ALARM_MANUAL_ON">com.ryersonedp.caralarm.STATUS_ALARM_MANUAL_ON</string>
+    <string name="broadcast_receiver_action_STATUS_ALARM_MANUAL_OFF">com.ryersonedp.caralarm.STATUS_ALARM_MANUAL_OFF</string>
+    <string name="broadcast_receiver_action_STATUS_LOCATION_UPDATEF">com.ryersonedp.caralarm.STATUS_LOCATION_UPDATE</string>
 
 </resources>

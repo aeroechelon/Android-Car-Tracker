@@ -14,7 +14,7 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.GET_ACCOUNTS" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
-    <permission android:name="com.ryersonedp.caralarm.permission.C2D_MESSAGE" android:protectionLevel="signature" />
+    <permission      android:name="com.ryersonedp.caralarm.permission.C2D_MESSAGE" android:protectionLevel="signature" />
     <uses-permission android:name="com.ryersonedp.caralarm.permission.C2D_MESSAGE" />
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
@@ -27,6 +27,13 @@
             <action android:name="android.intent.action.USER_PRESENT" />
         </intent-filter>
     </receiver>
+
+    <receiver android:name="com.ryersonedp.caralarm.CustomParseBroadcastReceiver">
+        <intent-filter>
+            <action android:name="com.ryersonedp.caralarm.NEW_NOTIF" />
+        </intent-filter>
+    </receiver>
+
     <receiver android:name="com.parse.GcmBroadcastReceiver"
         android:permission="com.google.android.c2dm.permission.SEND">
         <intent-filter>
@@ -73,10 +80,17 @@
             </intent-filter>
         </receiver>
 
-        <receiver android:name="com.parse.ParseBroadcastReceiver">
+        <service android:name="com.parse.PushService" />
+        <receiver android:name="com.ryersonedp.caralarm.CustomParseBroadcastReceiver">
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED" />
-                <action android:name="android.intent.action.USER_PRESENT" />
+
+                <!--All Parse Push Notifications are sent with the action below-->
+                <action android:name="com.ryersonedp.caralarm.NEW_NOTIF" />
+                <action android:name="com.ryersonedp.caralarm.STATUS_ALARM_ON"/>
+                <action android:name="com.ryersonedp.caralarm.STATUS_ALARM_OFF"/>
+                <action android:name="com.ryersonedp.caralarm.STATUS_ALARM_MANUAL_ON"/>
+                <action android:name="com.ryersonedp.caralarm.STATUS_ALARM_MANUAL_OFF"/>
+
             </intent-filter>
         </receiver>
 
