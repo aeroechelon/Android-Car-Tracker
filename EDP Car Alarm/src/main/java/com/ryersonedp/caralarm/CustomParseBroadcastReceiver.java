@@ -6,6 +6,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.RingtoneManager;
 import android.net.Uri;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationCompat;
@@ -56,11 +57,10 @@ public class CustomParseBroadcastReceiver extends BroadcastReceiver {
         Intent intent = new Intent(context, MainActivity.class);
         PendingIntent contentIntent = PendingIntent.getActivity(context, 0, intent, 0);
 
-        NotificationManager mNotifM = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 
-        SharedPreferences preference = PreferenceManager.getDefaultSharedPreferences(context);
-        String strRingtonePreference = preference.getString("ring_tone_pref", "DEFAULT_SOUND");
-        Uri notificationSound = Uri.parse(strRingtonePreference);
+        Uri notificationSound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
 
         NotificationCompat.Builder mBuilder =
                 new NotificationCompat.Builder(context)
@@ -68,10 +68,11 @@ public class CustomParseBroadcastReceiver extends BroadcastReceiver {
                         .setContentTitle(title)
                         .setContentText(content)
                         .setSound(notificationSound)
-                        .setNumber(++numMessages);
+                        .setNumber(++numMessages)
+                        .setTicker("Car Alarm Status: " + title);
 
         mBuilder.setContentIntent(contentIntent);
 
-        mNotifM.notify(NOTIFICATION_ID, mBuilder.build());
+        notificationManager.notify(NOTIFICATION_ID, mBuilder.build());
     }
 }

@@ -46,7 +46,8 @@
     \n
     \n• Android SDK
     \n• Google Maps API
-    \n• Parse SDK</string>
+    \n• Parse SDK
+    </string>
 
     <!-- Push Notifications-->
     <string name="custom_notification_receiver">com.ryersonedp.caralarm.NEW_NOTIF</string>
