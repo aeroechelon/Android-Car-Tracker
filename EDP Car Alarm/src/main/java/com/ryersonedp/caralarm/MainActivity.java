@@ -177,8 +177,8 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
                             mToggleAlarmButton.setBackgroundColor(getResources().getColor(R.color.green_overlay));
                         }
 
-                        mCarLocationButton.setBackgroundColor(getResources().getColor(R.color.black_overlay));
-                        mMyLocationButton.setBackgroundColor(getResources().getColor(R.color.grey_overlay));
+                        mCarLocationButton.setBackgroundColor(getResources().getColor(R.color.grey_overlay));
+                        mMyLocationButton.setBackgroundColor(getResources().getColor(R.color.black_overlay));
                     }
 
                 });
@@ -223,8 +223,8 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
 
         mMyLocationMarker.showInfoWindow();
 
-        mCarLocationButton.setBackgroundColor(getResources().getColor(R.color.grey_overlay));
-        mMyLocationButton.setBackgroundColor(getResources().getColor(R.color.black_overlay));
+        mCarLocationButton.setBackgroundColor(getResources().getColor(R.color.black_overlay));
+        mMyLocationButton.setBackgroundColor(getResources().getColor(R.color.grey_overlay));
 
         Log.wtf(TAG, "Updating server with phone status.");
         Log.wtf(TAG, "Your current location is at " + mLocation.getLatitude() + ", " + mLocation.getLongitude());
@@ -284,8 +284,8 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
                 }
             }
         });
-        mCarLocationButton.setBackgroundColor(getResources().getColor(R.color.black_overlay));
-        mMyLocationButton.setBackgroundColor(getResources().getColor(R.color.grey_overlay));
+        mCarLocationButton.setBackgroundColor(getResources().getColor(R.color.grey_overlay));
+        mMyLocationButton.setBackgroundColor(getResources().getColor(R.color.black_overlay));
     }
 
 
@@ -317,6 +317,7 @@ public class MainActivity extends Activity implements GooglePlayServicesClient.O
         mMap.getUiSettings().setMyLocationButtonEnabled(true);
         mMap.getUiSettings().setCompassEnabled(true);
         mMap.setIndoorEnabled(true);
+
 
         // Initiating a mLocationClient reference using GooglePlayServicesClient
         mLocationClient = new LocationClient(this, this, this);
